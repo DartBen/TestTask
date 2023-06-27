@@ -288,10 +288,6 @@ namespace testConsoleApp
             {
                 Console.Error.WriteLine("rs_initialize failed!");
             }
-
-            Console.Out.WriteLine("bye");
-
-            Console.ReadKey();
         }
 
         private static void rs_get_current_waypoint(ushort rshd, ref cSharpBinding.wayPoint_S waypoint)
