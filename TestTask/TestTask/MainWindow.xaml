@@ -6,12 +6,14 @@
         xmlns:local="clr-namespace:TestTask"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="900"
+        ResizeMode="NoResize"
         Closing="Window_Closing"
         >
     <Grid>
         <StackPanel Orientation="Horizontal">
             <Grid Width="200">
                 <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
@@ -31,7 +33,8 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Преобразованное У:" TextAlignment="Center"></TextBlock>
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Отправленное Х:" TextAlignment="Center"></TextBlock>
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Отправленное Y:" TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Точка слишком далеко" TextAlignment="Center"></TextBlock>
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Отправленное Z:" TextAlignment="Center"></TextBlock>
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="Точка слишком далеко" TextAlignment="Center"></TextBlock>
 
                 <TextBox Grid.Row="0" Grid.Column="1" Name="Cursor_X" IsEnabled="False" TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="1" Grid.Column="1" Name="Cursor_Y" TextAlignment="Center"></TextBox>
@@ -39,7 +42,8 @@
                 <TextBox Grid.Row="3" Grid.Column="1" Name="Cursor_Y_pos" TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="4" Grid.Column="1" Name="Sended_X" TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="5" Grid.Column="1" Name="Sended_Y" TextAlignment="Center"></TextBox>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="PosErr" TextAlignment="Center"></TextBox>
+                <TextBox Grid.Row="6" Grid.Column="1" Name="Sended_Z" TextAlignment="Center"></TextBox>
+                <TextBox Grid.Row="7" Grid.Column="1" Name="PosErr" TextAlignment="Center"></TextBox>
             </Grid>
             <Grid Width="500" Height="500" Background="#FFAFABAB">
                 <Grid.RowDefinitions>
@@ -50,8 +54,11 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Область управления мышью" TextAlignment="Center"/>
-                <Ellipse Fill="LightBlue" Width="300" Height="300"  Mouse.MouseMove="Grid_MouseMove" MouseDown="Ellipse_MouseDown">
+                <Ellipse Fill="LightBlue" Width="300" Height="300" Name="ControlEllipse"  Mouse.MouseMove="Grid_MouseMove" MouseDown="Ellipse_MouseDown">
                 </Ellipse>
+                <Ellipse Fill="Red" Width="25" Height="25" Name="PosEllipse" Margin="238,233,238,242"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Name="Slider_Z_TextBlock" TextAlignment="Center" Height="30" Margin="0,405,0,65" />
+                <Slider Value="0" Minimum="-0.9" Maximum="0.9" SelectionStart="0" Height="30" Name="Slider_Z" IsSelectionRangeEnabled="True" Margin="0,435,0,35" ValueChanged="Slider_Z_ValueChanged" />
             </Grid>
             <Grid Width="200">
                 <Grid.RowDefinitions>
@@ -68,18 +75,18 @@
                     <ColumnDefinition Width="150"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Row="0" Grid.Column="1" Name="Button_1" Click="Button_1_Click" TextBlock.TextAlignment="Center" Content="Инициализация"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="Положение мыши по У:"   TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="Область перемещения 1:" TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="Область перемещения 2:" TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="Область перемещения 3:" TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="Область перемещения 4:" TextAlignment="Center"></TextBlock>
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="Область перемещения 5:" TextAlignment="Center"></TextBlock>
+                <Button Grid.Row="0" Grid.Column="1" Name="Button_1" Click="Button_1_Click" TextBlock.TextAlignment="Left" Content="Инициализация"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text=":Тек.положение по Х" TextAlignment="Left"></TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text=":Тек.положение по Y" TextAlignment="Left"></TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text=":Тек.положение по Z" TextAlignment="Left"></TextBlock>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="Область перемещения 3:" TextAlignment="Left"></TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="Область перемещения 4:" TextAlignment="Left"></TextBlock>
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="Область перемещения 5:" TextAlignment="Left"></TextBlock>
 
                 <TextBox Grid.Row="0" Grid.Column="0" Name="InitStatus" TextAlignment="Center"></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="0" TextAlignment="Center"></TextBox>
-                <TextBox Grid.Row="2" Grid.Column="0" Text="" TextAlignment="Center"></TextBox>
-                <TextBox Grid.Row="3" Grid.Column="0" Text="" TextAlignment="Center"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="0" Name="Current_X"  TextAlignment="Center"></TextBox>
+                <TextBox Grid.Row="2" Grid.Column="0" Name="Current_Y"  TextAlignment="Center"></TextBox>
+                <TextBox Grid.Row="3" Grid.Column="0" Name="Current_Z"  TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="4" Grid.Column="0" Text="" TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="5" Grid.Column="0" Text="" TextAlignment="Center"></TextBox>
                 <TextBox Grid.Row="6" Grid.Column="0" Text="" TextAlignment="Center"></TextBox>

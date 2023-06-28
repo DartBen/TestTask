@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using testConsoleApp;
+using Lib;
+using static Lib.cSharpBinding;
 
 namespace TestTask
 {
@@ -844,8 +846,8 @@ namespace TestTask
 
             //для отправки запросов на положение и тд
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5);
-            //timer.Tick += timer_Tick;
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
             timer.Start();
 
 
@@ -857,7 +859,13 @@ namespace TestTask
             //直接获取机械臂当前位置信息
             cSharpBinding.rs_get_current_waypoint(rshd, ref waypoint);
             //打印路点信息
-            cSharpBinding.PrintWaypoint(waypoint);
+            //cSharpBinding.PrintWaypoint(waypoint);
+
+            Console.Out.WriteLine("pos.x={0} y={1} z={2}", waypoint.cartPos.x, waypoint.cartPos.y, waypoint.cartPos.z);
+
+            Current_X.Text = waypoint.cartPos.x.ToString();
+            Current_Y.Text = waypoint.cartPos.y.ToString();
+            Current_Z.Text = waypoint.cartPos.z.ToString();
 
             //根据错误号返回错误信息
             int err_code = 10024;
@@ -974,7 +982,7 @@ namespace TestTask
                     //注销机械臂控制上下文句柄
                     //cSharpBinding.rs_destory_context(rshd);
 
-                    
+
                 }
                 else
                 {
@@ -1003,10 +1011,11 @@ namespace TestTask
             cSharpBinding.Pos pos = new cSharpBinding.Pos();
             pos.x = PosCursorXTarget;
             pos.y = PosCursorYTarget;
-            pos.z = 0.2;
+            pos.z = (double)Slider_Z.Value;//0.2;
 
             Sended_X.Text = pos.x.ToString();
             Sended_Y.Text = pos.y.ToString();
+            Sended_Z.Text = pos.z.ToString();
 
             cSharpBinding.ToolInEndDesc tool_pos = new cSharpBinding.ToolInEndDesc();
             tool_pos.orientation.w = 1;
@@ -1017,7 +1026,7 @@ namespace TestTask
             tool_pos.cartPos.y = 0;
             tool_pos.cartPos.z = 0;
 
-            if ((double)Math.Sqrt(PosCursorXTarget * PosCursorXTarget + PosCursorYTarget * PosCursorYTarget) <= 0.9*0.9 - pos.z* pos.z)
+            if ((double)Math.Sqrt(PosCursorXTarget * PosCursorXTarget + PosCursorYTarget * PosCursorYTarget) <= (double)Math.Sqrt(0.9 * 0.9 - pos.z * pos.z))
             {
                 PosErr.Text = "";
                 Thread thread = new Thread(() => cSharpBinding.rs_move_line_to(rshd, ref pos, ref tool_pos, true));
@@ -1039,6 +1048,16 @@ namespace TestTask
             return minScale + scaleWeight * (value - minValue);
         }
 
+        private void Slider_Z_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Slider_Z_TextBlock.Text = Slider_Z.Value.ToString();
 
+            if (Slider_Z.Value != 0)
+            {
+                ControlEllipse.Width =  (double)Math.Sqrt(0.9 * 0.9 - Slider_Z.Value * Slider_Z.Value) * 333.3333333333333;
+                ControlEllipse.Height = (double)Math.Sqrt(0.9 * 0.9 - Slider_Z.Value * Slider_Z.Value) * 333.3333333333333;
+            }
+
+        }
     }
 }

@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\testConsoleApp\testConsoleApp.csproj" />
+		<ProjectReference Include="..\testConsoleApp\Lib.csproj" />
 	</ItemGroup>
 
 </Project>
