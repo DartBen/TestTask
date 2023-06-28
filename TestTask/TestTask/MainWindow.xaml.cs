@@ -4,7 +4,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Lib;
 using static Lib.cSharpBinding;
@@ -16,11 +18,13 @@ namespace TestTask
     /// </summary>
     public partial class MainWindow : Window
     {
-        public double CursorX;
-        public double CursorY;
+        public double cursorX;
+        public double cursorY;
 
-        public double PosCursorXTarget;
-        public double PosCursorYTarget;
+        public double posCursorXTarget;
+        public double posCursorYTarget;
+
+        public double currentPos_X, currentPos_Y, currentPos_Z;
 
 
         cSharpBinding csharpbingding = new cSharpBinding();
@@ -863,6 +867,14 @@ namespace TestTask
 
             Console.Out.WriteLine("pos.x={0} y={1} z={2}", waypoint.cartPos.x, waypoint.cartPos.y, waypoint.cartPos.z);
 
+            int test=0;
+            cSharpBinding.CurrentPositionCallback(ref waypoint, test);
+
+            currentPos_X = waypoint.cartPos.x;
+            currentPos_Y = waypoint.cartPos.y;
+            currentPos_Z = waypoint.cartPos.z;
+            PosEllipseMove();
+
             Current_X.Text = waypoint.cartPos.x.ToString();
             Current_Y.Text = waypoint.cartPos.y.ToString();
             Current_Z.Text = waypoint.cartPos.z.ToString();
@@ -918,17 +930,17 @@ namespace TestTask
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            CursorX = Mouse.GetPosition(Application.Current.MainWindow).X;
-            Cursor_X.Text = CursorX.ToString();
+            cursorX = Mouse.GetPosition(Application.Current.MainWindow).X;
+            Cursor_X.Text = cursorX.ToString();
 
-            PosCursorXTarget = Scale(0.9, -0.9, 600, 300, CursorX);
-            Cursor_X_pos.Text = PosCursorXTarget.ToString();
+            posCursorXTarget = Scale(0.9, -0.9, 600, 300, cursorX);
+            Cursor_X_pos.Text = posCursorXTarget.ToString();
 
-            CursorY = Mouse.GetPosition(Application.Current.MainWindow).Y;
-            Cursor_Y.Text = CursorY.ToString();
+            cursorY = Mouse.GetPosition(Application.Current.MainWindow).Y;
+            Cursor_Y.Text = cursorY.ToString();
 
-            PosCursorYTarget = Scale(-0.9, 0.9, 400, 100, CursorY);
-            Cursor_Y_pos.Text = PosCursorYTarget.ToString();
+            posCursorYTarget = Scale(-0.9, 0.9, 400, 100, cursorY);
+            Cursor_Y_pos.Text = posCursorYTarget.ToString();
         }
 
         private async void Button_1_Click(object sender, RoutedEventArgs e)
@@ -1009,8 +1021,8 @@ namespace TestTask
         private async void Ellipse_MouseDown(object sender, MouseButtonEventArgs e)
         {
             cSharpBinding.Pos pos = new cSharpBinding.Pos();
-            pos.x = PosCursorXTarget;
-            pos.y = PosCursorYTarget;
+            pos.x = posCursorXTarget;
+            pos.y = posCursorYTarget;
             pos.z = (double)Slider_Z.Value;//0.2;
 
             Sended_X.Text = pos.x.ToString();
@@ -1026,7 +1038,7 @@ namespace TestTask
             tool_pos.cartPos.y = 0;
             tool_pos.cartPos.z = 0;
 
-            if ((double)Math.Sqrt(PosCursorXTarget * PosCursorXTarget + PosCursorYTarget * PosCursorYTarget) <= (double)Math.Sqrt(0.9 * 0.9 - pos.z * pos.z))
+            if ((double)Math.Sqrt(posCursorXTarget * posCursorXTarget + posCursorYTarget * posCursorYTarget) <= (double)Math.Sqrt(0.9 * 0.9 - pos.z * pos.z))
             {
                 PosErr.Text = "";
                 Thread thread = new Thread(() => cSharpBinding.rs_move_line_to(rshd, ref pos, ref tool_pos, true));
@@ -1054,10 +1066,24 @@ namespace TestTask
 
             if (Slider_Z.Value != 0)
             {
-                ControlEllipse.Width =  (double)Math.Sqrt(0.9 * 0.9 - Slider_Z.Value * Slider_Z.Value) * 333.3333333333333;
+                ControlEllipse.Width = (double)Math.Sqrt(0.9 * 0.9 - Slider_Z.Value * Slider_Z.Value) * 333.3333333333333;
                 ControlEllipse.Height = (double)Math.Sqrt(0.9 * 0.9 - Slider_Z.Value * Slider_Z.Value) * 333.3333333333333;
-            }
 
+                double desiredCenterX = CanvasForMouse.ActualWidth / 2;
+                double desiredCenterY = CanvasForMouse.ActualHeight / 2;
+
+                Canvas.SetLeft(ControlEllipse, desiredCenterX - (ControlEllipse.Width / 2));
+                Canvas.SetTop(ControlEllipse, desiredCenterY - (ControlEllipse.Height / 2));
+            }
+        }
+
+        private void PosEllipseMove()
+        {
+            double positionX = Scale(400, 100, 0.9, -0.9, currentPos_X);
+            double positionY = Scale(100, 400, 0.9, -0.9, currentPos_Y);
+
+            Canvas.SetLeft(PosEllipse, positionX - (PosEllipse.Width / 2));
+            Canvas.SetTop(PosEllipse, positionY - (PosEllipse.Height / 2));
         }
     }
 }
